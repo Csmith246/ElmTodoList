@@ -2,6 +2,7 @@ import Html exposing (Html, button, div, text, input, label)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style, type_)
 import List
+import Debug
 
 
 main = Html.beginnerProgram { model=model, view=view, update=update }
@@ -10,7 +11,8 @@ main = Html.beginnerProgram { model=model, view=view, update=update }
 
 
 type alias Todo = 
-  { content : String
+  { id : Int
+  , content : String
   , done : Bool
   , important : Bool
   , priority : Int
@@ -27,8 +29,8 @@ type alias Model =
   }
 
 model : Model
-model = { todoLists = [ (TodoList [ (Todo "THIS IS A TODO" False False 3 ) ] 1 "THIS IS A TODOLIST" ),
-                        (TodoList [ (Todo "THIS IS A TODO122222" False False 3 ), (Todo "THIS IS A 2nd thing in a list" False False 3 ) ] 
+model = { todoLists = [ (TodoList [ (Todo 1 "THIS IS A TODO" False False 3 ) ] 1 "THIS IS A TODOLIST" ),
+                        (TodoList [ (Todo 2 "THIS IS A TODO122222" False False 3 ), (Todo 3 "THIS IS A 2nd thing in a list" False False 3 ) ] 
                         1 "THIS IS A TODOLIST2" )
                         ] }
 
@@ -38,15 +40,15 @@ model = { todoLists = [ (TodoList [ (Todo "THIS IS A TODO" False False 3 ) ] 1 "
 -- Update
 
 
-type Msg = ToggleChecked
-         | ChangeTodoPriority
+type Msg = ToggleChecked Int
+        -- | ChangeTodoPriority
 
 update : Msg -> Model -> Model
 update msg model =
-
+  
   case msg of 
-    ToggleChecked ->
-      \todo -> { todo | done = not todo.done }
+    ToggleChecked todoId ->
+      { model | todoLists = (List.map (\todoList -> {todoList | todos = List.map (\todo -> if todo.id == todoId then { todo | done = not todo.done } else todo) todoList.todos } ) model.todoLists)}
 {-    ChangeTodoPriority ->
       \todo newPriority -> { todo | priotity = newPriority }
 -}
@@ -72,7 +74,7 @@ listTodos : Todo -> Html Msg
 listTodos todo = 
   div [] 
     [ label [] [
-      input [ type_ "checkbox", onClick (ToggleChecked todo)] []
+      input [ type_ "checkbox", onClick (ToggleChecked todo.id) ] []
       , text todo.content
       ]
     ]
