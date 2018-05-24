@@ -1,5 +1,6 @@
-import Html exposing (Html, button, div, text)
+import Html exposing (Html, button, div, text, input, label)
 import Html.Events exposing (onClick)
+import Html.Attributes exposing (style, type_)
 import List
 
 
@@ -27,29 +28,27 @@ type alias Model =
 
 model : Model
 model = { todoLists = [ (TodoList [ (Todo "THIS IS A TODO" False False 3 ) ] 1 "THIS IS A TODOLIST" ),
-                        (TodoList [ (Todo "THIS IS A TODO122222" False False 3 ), (Todo "THIS IS A 2nd thing in a list" False False 3 ) ] 1 "THIS IS A TODOLIST2" )
+                        (TodoList [ (Todo "THIS IS A TODO122222" False False 3 ), (Todo "THIS IS A 2nd thing in a list" False False 3 ) ] 
+                        1 "THIS IS A TODOLIST2" )
                         ] }
 
-type alias todoListBackColor =
+--type alias todoListBackColor =
 
 
 -- Update
 
 
 type Msg = ToggleChecked
-         | ChangePriority
-         | 
+         | ChangeTodoPriority
 
 update : Msg -> Model -> Model
 update msg model =
-  model
-{-
+
   case msg of 
     ToggleChecked ->
-      
---      not model.todoLists.todos.priority
-    ChangePriority ->
---      model.todoLists
+      \todo -> { todo | done = not todo.done }
+{-    ChangeTodoPriority ->
+      \todo newPriority -> { todo | priotity = newPriority }
 -}
 
 -- View
@@ -57,23 +56,60 @@ update msg model =
 
 view : Model -> Html Msg
 view model = 
-  div []
+  div [ flexStyle ]
     [ div [] [ text "TodoList App"]
     , div [] (List.map listTodoList model.todoLists)
     ]
 
 listTodoList : TodoList -> Html Msg
 listTodoList todoList = 
-  div [] 
-  [ div [] [text ("List Name" ++ todoList.name)]
+  div [ marginSpacing ] 
+  [ div [ listHeader ] [text (todoList.name)]
   , div [] (List.map listTodos todoList.todos)
   ]
     
 listTodos : Todo -> Html Msg
 listTodos todo = 
   div [] 
-    [ div [] [text todo.content]
+    [ label [] [
+      input [ type_ "checkbox", onClick (ToggleChecked todo)] []
+      , text todo.content
+      ]
     ]
+
+
+-- Styles
+
+flexStyle : Html.Attribute msg
+flexStyle =
+  style
+    [ ("display", "flex")
+    , ("flex-direction", "column")
+    , ("justify-content", "center")
+    , ("align-items", "center")
+    , ("height", "100%")
+    ]
+
+listHeader : Html.Attribute msg
+listHeader = 
+  style 
+    [ ("font-weight", "bold")
+    ]
+
+marginSpacing : Html.Attribute msg
+marginSpacing = 
+  style
+    [ ("margin", "10px") 
+    ]
+
+
+
+
+
+
+
+
+
 
 
 
